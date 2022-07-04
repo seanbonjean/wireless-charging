@@ -28,7 +28,7 @@ void core1_main (void)
     IfxScuWdt_disableCpuWatchdog(IfxScuWdt_getCpuWatchdogPassword());
     //用户在此处调用各种初始化函数等
 
-    servoPID_init();
+    getPosition_init();
     speedPID_init();
 
     //等待所有核心初始化完毕

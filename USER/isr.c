@@ -40,9 +40,7 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, 0, CCU6_0_CH1_ISR_PRIORITY)
     enableInterrupts(); //¿ªÆôÖÐ¶ÏÇ¶Ì×
     PIT_CLEAR_FLAG(CCU6_0, PIT_CH1);
 
-    //printf("$%f ", getAngle());
-
-    //getAngle();
+    getAngle();
 
     //printf("$%d ", -icm_gyro_x);
     //printf("$%d;", icm_gyro_y);
@@ -50,12 +48,6 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, 0, CCU6_0_CH1_ISR_PRIORITY)
     //printf("%d;", icm_acc_x);
     //printf("%d;", icm_acc_y);
     //printf("%d;", icm_acc_z);
-
-#if(0 == SET_MEC_ZERO)
-    balancePID(getAngle());
-#elif(1 == SET_MEC_ZERO)
-    printf("$%f;", getAngle() - IMU_MEC_ZERO);
-#endif
 }
 
 IFX_INTERRUPT(cc61_pit_ch0_isr, 0, CCU6_1_CH0_ISR_PRIORITY)
@@ -71,7 +63,7 @@ IFX_INTERRUPT(cc61_pit_ch1_isr, 0, CCU6_1_CH1_ISR_PRIORITY)
     enableInterrupts(); //¿ªÆôÖÐ¶ÏÇ¶Ì×
     PIT_CLEAR_FLAG(CCU6_1, PIT_CH1);
 
-    servoPID();
+    wirelessCharge();
 }
 
 IFX_INTERRUPT(eru_ch0_ch4_isr, 0, ERU_CH0_CH4_INT_PRIO)

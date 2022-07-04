@@ -50,7 +50,7 @@
 #define CCU6_1_CH0_INT_SERVICE	IfxSrc_Tos_cpu1
 #define CCU6_1_CH0_ISR_PRIORITY 32
 
-#define CCU6_1_CH1_INT_SERVICE	IfxSrc_Tos_cpu1
+#define CCU6_1_CH1_INT_SERVICE	IfxSrc_Tos_cpu0
 #define CCU6_1_CH1_ISR_PRIORITY 33
 
 

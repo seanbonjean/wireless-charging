@@ -21,7 +21,7 @@
 uint8 paraChoice = '\0';
 #pragma section all restore
 
-extern int16 re_set_speed; //电机期望速度
+extern int16 M0_set_speed; //电机期望速度
 
 void serial_io_init (void)
 {
@@ -52,7 +52,7 @@ void serial_io (UARTN_enum uartn)
         //根据参数标识选择修改哪个参数
         {
             case 'a' :
-                serialInt(uartn, (uint16*)&re_set_speed);
+                serialInt(uartn, (uint16*)&M0_set_speed);
                 break;
         }
     }

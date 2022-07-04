@@ -15,8 +15,6 @@
 
 boolean beeping = FALSE; //蜂鸣器发声指示，TRUE正在发声，FALSE未发声
 
-boolean rest = FALSE; //电机休息，保护参数
-
 //当前按键状态
 boolean key1_state = TRUE;
 boolean key2_state = TRUE;
@@ -35,7 +33,7 @@ boolean key6_preState = TRUE;
 
 enum
 {
-    moSpeed, moAngle, moPalstance, servo, rearWheel
+    M0, M1
 } nowShowing = 0; //指示当前调参目标
 
 enum
@@ -61,11 +59,8 @@ float changeSize = CHANGE_LEVEL_MEDIUM; //调参幅度
 extern boolean beep; //蜂鸣器发声命令，置1发声，并由CPU0控制发声300ms后置0停止发声
 
 #if(0 == IN_RACE)
-extern float moSpe_Kp, moSpe_Ki, moSpe_Kd;
-extern float moAng_Kp, moAng_Ki, moAng_Kd;
-extern float moPal_Kp, moPal_Ki, moPal_Kd;
-extern float se_Kp, se_Kd;
-extern float re_Kp, re_Ki, re_Kd;
+extern float M0_Kp, M0_Ki, M0_Kd;
+extern float M1_Kp, M1_Ki, M1_Kd;
 #endif
 
 #if(1 == IN_RACE)
@@ -78,7 +73,10 @@ extern uint8 centerLine[MT9V03X_H]; //赛道中线
 extern int16 pos; //记录位置偏差
 #endif
 
-//extern int16 re_set_speed; //电机期望速度
+/*
+extern int16 M0_set_speed; //电机期望速度
+extern int16 M1_set_speed;
+*/
 
 void interface_init (void)
 {
@@ -144,16 +142,20 @@ void interface (void)
 
     //当按键6按下
     if (!key6_state && key6_preState)
-        rest = !rest;
-    //re_set_speed = SPEED_NORM; //走起！
+    {
+        /*
+        M0_set_speed = SPEED_NORM; //走起！
+        M1_set_speed = SPEED_NORM;
+        */
+    }
 
 #if(0 == IN_RACE)
     //当按键1按下
     if (!key1_state && key1_preState)
     {
         nowShowing++; //更改当前调参目标
-        if (nowShowing > rearWheel) //防止超出范围
-            nowShowing = moSpeed;
+        if (nowShowing > M1) //防止超出范围
+            nowShowing = M0;
     }
 
     //当按键2按下
@@ -196,86 +198,36 @@ void interface (void)
     {
         switch (nowShowing)
         {
-            case moSpeed :
+            case M0 :
                 switch (nowChanging)
                 {
                     case Kp :
-                        moSpe_Kp -= changeSize;
+                        M0_Kp -= changeSize;
                         break;
 
                     case Ki :
-                        moSpe_Ki -= changeSize;
+                        M0_Ki -= changeSize;
                         break;
 
                     case Kd :
-                        moSpe_Kd -= changeSize;
+                        M0_Kd -= changeSize;
                         break;
                 }
                 break;
 
-            case moAngle :
+            case M1 :
                 switch (nowChanging)
                 {
                     case Kp :
-                        moAng_Kp -= changeSize;
+                        M1_Kp -= changeSize;
                         break;
 
                     case Ki :
-                        moAng_Ki -= changeSize;
+                        M1_Ki -= changeSize;
                         break;
 
                     case Kd :
-                        moAng_Kd -= changeSize;
-                        break;
-                }
-                break;
-
-            case moPalstance :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        moPal_Kp -= changeSize;
-                        break;
-
-                    case Ki :
-                        moPal_Ki -= changeSize;
-                        break;
-
-                    case Kd :
-                        moPal_Kd -= changeSize;
-                        break;
-                }
-                break;
-
-            case servo :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        se_Kp -= changeSize;
-                        break;
-
-                    case Ki :
-                        break;
-
-                    case Kd :
-                        se_Kd -= changeSize;
-                        break;
-                }
-                break;
-
-            case rearWheel :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        re_Kp -= changeSize;
-                        break;
-
-                    case Ki :
-                        re_Ki -= changeSize;
-                        break;
-
-                    case Kd :
-                        re_Kd -= changeSize;
+                        M1_Kd -= changeSize;
                         break;
                 }
                 break;
@@ -287,86 +239,36 @@ void interface (void)
     {
         switch (nowShowing)
         {
-            case moSpeed :
+            case M0 :
                 switch (nowChanging)
                 {
                     case Kp :
-                        moSpe_Kp += changeSize;
+                        M0_Kp += changeSize;
                         break;
 
                     case Ki :
-                        moSpe_Ki += changeSize;
+                        M0_Ki += changeSize;
                         break;
 
                     case Kd :
-                        moSpe_Kd += changeSize;
+                        M0_Kd += changeSize;
                         break;
                 }
                 break;
 
-            case moAngle :
+            case M1 :
                 switch (nowChanging)
                 {
                     case Kp :
-                        moAng_Kp += changeSize;
+                        M1_Kp += changeSize;
                         break;
 
                     case Ki :
-                        moAng_Ki += changeSize;
+                        M1_Ki += changeSize;
                         break;
 
                     case Kd :
-                        moAng_Kd += changeSize;
-                        break;
-                }
-                break;
-
-            case moPalstance :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        moPal_Kp += changeSize;
-                        break;
-
-                    case Ki :
-                        moPal_Ki += changeSize;
-                        break;
-
-                    case Kd :
-                        moPal_Kd += changeSize;
-                        break;
-                }
-                break;
-
-            case servo :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        se_Kp += changeSize;
-                        break;
-
-                    case Ki :
-                        break;
-
-                    case Kd :
-                        se_Kd += changeSize;
-                        break;
-                }
-                break;
-
-            case rearWheel :
-                switch (nowChanging)
-                {
-                    case Kp :
-                        re_Kp += changeSize;
-                        break;
-
-                    case Ki :
-                        re_Ki += changeSize;
-                        break;
-
-                    case Kd :
-                        re_Kd += changeSize;
+                        M1_Kd += changeSize;
                         break;
                 }
                 break;
@@ -376,39 +278,18 @@ void interface (void)
     //显示PID参数
     switch (nowShowing)
     {
-        case moSpeed :
-            ips114_showstr(190, 0, "moSpe");
-            ips114_showfloat(190, 3, moSpe_Kp, 3, 2);
-            ips114_showfloat(190, 5, moSpe_Ki, 3, 2);
-            ips114_showfloat(190, 7, moSpe_Kd, 3, 2);
+        case M0 :
+            ips114_showstr(190, 0, "M0");
+            ips114_showfloat(190, 3, M0_Kp, 3, 2);
+            ips114_showfloat(190, 5, M0_Ki, 3, 2);
+            ips114_showfloat(190, 7, M0_Kd, 3, 2);
             break;
 
-        case moAngle :
-            ips114_showstr(190, 0, "moAng");
-            ips114_showfloat(190, 3, moAng_Kp, 3, 2);
-            ips114_showfloat(190, 5, moAng_Ki, 3, 2);
-            ips114_showfloat(190, 7, moAng_Kd, 3, 2);
-            break;
-
-        case moPalstance :
-            ips114_showstr(190, 0, "moPal");
-            ips114_showfloat(190, 3, moPal_Kp, 3, 2);
-            ips114_showfloat(190, 5, moPal_Ki, 3, 2);
-            ips114_showfloat(190, 7, moPal_Kd, 3, 2);
-            break;
-
-        case servo :
-            ips114_showstr(190, 0, "servo");
-            ips114_showfloat(190, 3, se_Kp, 3, 2);
-            ips114_showstr(190, 5, "No Ki");
-            ips114_showfloat(190, 7, se_Kd, 3, 2);
-            break;
-
-        case rearWheel :
-            ips114_showstr(190, 0, "rear ");
-            ips114_showfloat(190, 3, re_Kp, 3, 2);
-            ips114_showfloat(190, 5, re_Ki, 3, 2);
-            ips114_showfloat(190, 7, re_Kd, 3, 2);
+        case M1 :
+            ips114_showstr(190, 0, "M1");
+            ips114_showfloat(190, 3, M1_Kp, 3, 2);
+            ips114_showfloat(190, 5, M1_Ki, 3, 2);
+            ips114_showfloat(190, 7, M1_Kd, 3, 2);
             break;
     }
 

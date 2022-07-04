@@ -30,9 +30,14 @@ uint8 leftLine[MT9V03X_H]; //左边界
 uint8 rightLine[MT9V03X_H]; //右边界
 uint8 centerLine[MT9V03X_H]; //赛道中线
 
-//舵机打角量计算
+//位置偏差计算
 uint8 center; //暂存当前行中点，避免重复寻址
 int16 centerError; //中心线误差
+
+//差速控制
+int16 overall_speed = 0; //全局速度
+extern int16 M0_set_speed; //期望速度
+extern int16 M1_set_speed;
 
 //屏幕显示
 float display_e2;
@@ -41,7 +46,7 @@ uint8 display_startLine_length;
 
 enum
 {
-    out, junction, roundabout, cross1, cross2, ramp, in
+    out, junction1, ramp, junction2, roundabout1, cross1, roundabout2, junction3, junction4, cross2, in
 } carState; //赛道进程指示
 
 #pragma section all restore
@@ -57,7 +62,6 @@ void getPosition (void)
 {
     if (mt9v03x_finish_flag) //当采集完成时
     {
-
         //seekfree_sendimg_03x(WIRELESS_UART, mt9v03x_image[0], MT9V03X_W, MT9V03X_H); //图像发送上位机
 
         //取该行第一个像素灰度作为灰度范围的初值
@@ -164,6 +168,9 @@ void getPosition (void)
 
         pos = centerError; //输出位置偏差
 
+        //差速控制
+        M0_set_speed = overall_speed * (1 + (float) pos / POS_MAP);
+        M1_set_speed = overall_speed * (1 - (float) pos / POS_MAP);
     }
 }
 

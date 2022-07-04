@@ -35,9 +35,8 @@ int core0_main (void)
     //用户在此处调用各种初始化函数等
 
     interface_init();
-    getPosition_init();
     getAngle_init();
-    balancePID_init();
+    wirelessCharge_init();
     serial_io_init();
 
     //等待所有核心初始化完毕
