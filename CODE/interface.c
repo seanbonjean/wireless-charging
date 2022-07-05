@@ -140,14 +140,11 @@ void interface (void)
     key5_state = gpio_get(KEY5);
     key6_state = gpio_get(KEY6);
 
+    /*
     //当按键6按下
     if (!key6_state && key6_preState)
-    {
-        /*
-        M0_set_speed = SPEED_NORM; //走起！
-        M1_set_speed = SPEED_NORM;
-        */
-    }
+        overall_speed = SPEED_NORM; //走起！
+    */
 
 #if(0 == IN_RACE)
     //当按键1按下

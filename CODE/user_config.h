@@ -28,6 +28,11 @@
 
 #define POS_MAP 50//位置偏差映射到差速速度比例
 
+//电压上下限
+#define IND_TRIG_VOT 3//电感触发电压
+#define CAP_MAX_VOT 11.5//电容组最高电压
+#define BAT_MIN_VOT 7//电池最低电压
+
 //0号电机PID参数
 #define M0_KP 25
 #define M0_KI 2

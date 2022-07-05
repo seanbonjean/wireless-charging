@@ -12,12 +12,19 @@
 #define LD P11_9
 #define LE P11_10
 
+//电压监测引脚定义
+#define IND_PIN ADC0_CH0_A0
+#define CAP_PIN ADC0_CH7_A7
+#define BAT_PIN ADC0_CH8_A8
+
 #pragma section all "cpu0_dsram"
 
 boolean nowCharging = TRUE; //充电标识符
 
 float ind_voltage = 0; //电感电压
 float cap_voltage = 0; //电容组电压
+float bat_voltage = 0; //电池电压
+
 uint8 LED_pointer = 0; //LED指针
 
 #pragma section all restore
@@ -48,18 +55,46 @@ void wirelessCharge_init (void)
 void wirelessCharge (void)
 {
     //读取电压
-    ind_voltage = adc_mean_filter(ADC_0, ADC0_CH0_A0, ADC_8BIT, 10) * 3300 / 256;
-    cap_voltage = (adc_mean_filter(ADC_0, ADC0_CH1_A1, ADC_8BIT, 10) * 3300 / 256) * 3;
+    ind_voltage = adc_mean_filter(ADC_0, IND_PIN, ADC_8BIT, 10) * 3300 / 256;
+    cap_voltage = (adc_mean_filter(ADC_0, CAP_PIN, ADC_8BIT, 10) * 3300 / 256) * 3;
+    bat_voltage = (adc_mean_filter(ADC_0, BAT_PIN, ADC_8BIT, 10) * 3300 / 256) * 3;
+
+    if (bat_voltage < BAT_MIN_VOT)
+    {
+        gpio_set(L1, 1);
+        gpio_set(L2, 1);
+        gpio_set(L3, 1);
+        systick_delay_us(STM1, 1);
+        gpio_set(LA, 0);
+        gpio_set(LB, 0);
+        gpio_set(LC, 0);
+        gpio_set(LD, 0);
+        gpio_set(LE, 0);
+
+        while (TRUE)
+        {
+            systick_delay_ms(STM1, 500);
+            gpio_toggle(L1);
+            gpio_toggle(L2);
+            gpio_toggle(L3);
+            systick_delay_us(STM1, 1);
+            gpio_toggle(LA);
+            gpio_toggle(LB);
+            gpio_toggle(LC);
+            gpio_toggle(LD);
+            gpio_toggle(LE);
+        }
+    }
 
     //充满电时
-    if (nowCharging && cap_voltage > 11.5)
+    if (nowCharging && cap_voltage > CAP_MAX_VOT)
     {
         overall_speed = SPEED_NORM;    //走起
         nowCharging = FALSE;
     }
 
     //遇到充电桩时
-    if (!nowCharging && ind_voltage > 3)
+    if (!nowCharging && ind_voltage > IND_TRIG_VOT)
     {
         overall_speed = 0;    //停下
         nowCharging = TRUE;
